@@ -1,5 +1,6 @@
 package com.games.iris.spotifystreamer;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -31,6 +33,7 @@ import kaaes.spotify.webapi.android.models.Pager;
 public class MainActivityFragment extends Fragment {
 
     private ArtistsArrayAdapter arrayAdapter;
+    private OnMainFragmentInteractionListener interactionListener;
 
     public MainActivityFragment() {
     }
@@ -45,6 +48,15 @@ public class MainActivityFragment extends Fragment {
         ListView artistsListView = (ListView) rootView.findViewById(R.id.results_listView);
         arrayAdapter = new ArtistsArrayAdapter(getActivity(), new ArrayList<Artist>());
         artistsListView.setAdapter(arrayAdapter);
+        artistsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Artist artist = arrayAdapter.getItem(position);
+                interactionListener.onArtistSelected(artist.id);
+            }
+        });
+
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -54,7 +66,25 @@ public class MainActivityFragment extends Fragment {
                 return false;
             }
         });
+
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            interactionListener = (OnMainFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                                         + " must implement OnMainFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        interactionListener = null;
     }
 
     private void launchSearch(@NonNull String query)
@@ -63,6 +93,11 @@ public class MainActivityFragment extends Fragment {
         {
             new SearchArtistsAsyncTask().execute(query);
         }
+    }
+
+    public interface OnMainFragmentInteractionListener
+    {
+        public void onArtistSelected(String spotifyId);
     }
 
     class SearchArtistsAsyncTask extends AsyncTask<String, Void, Pager<Artist>>

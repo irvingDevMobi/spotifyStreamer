@@ -1,12 +1,14 @@
 package com.games.iris.spotifystreamer;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity
+    implements MainActivityFragment.OnMainFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,5 +37,16 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onArtistSelected(String spotifyId) {
+        TopTracksFragment topsFragment = TopTracksFragment.newInstance(spotifyId);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        transaction.replace(R.id.fragment, topsFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }
