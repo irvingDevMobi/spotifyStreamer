@@ -2,9 +2,9 @@ package com.games.iris.spotifystreamer;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -97,7 +97,7 @@ public class MainActivityFragment extends Fragment {
 
     public interface OnMainFragmentInteractionListener
     {
-        public void onArtistSelected(String spotifyId);
+        void onArtistSelected(String spotifyId);
     }
 
     class SearchArtistsAsyncTask extends AsyncTask<String, Void, Pager<Artist>>
