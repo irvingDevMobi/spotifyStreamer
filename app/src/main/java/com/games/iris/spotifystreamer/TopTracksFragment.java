@@ -3,6 +3,9 @@ package com.games.iris.spotifystreamer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import com.games.iris.spotifystreamer.Adapters.TrackArrayAdapter;
 
@@ -26,6 +29,7 @@ public class TopTracksFragment extends ListFragment {
 
     public static String ARG_SPOTIFY_ID = "spotifyId";
     private TrackArrayAdapter arrayAdapter;
+    private ActionBar actionBar;
 
     public static TopTracksFragment newInstance(String spotifyId) {
         TopTracksFragment fragment = new TopTracksFragment();
@@ -45,7 +49,12 @@ public class TopTracksFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
 
+        }
         arrayAdapter = new TrackArrayAdapter(getActivity(), new ArrayList<Track>());
         setListAdapter(arrayAdapter);
 
@@ -53,6 +62,21 @@ public class TopTracksFragment extends ListFragment {
         new TopTracksAsyncTask().execute(spotifyId);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(false);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            getActivity().onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     class TopTracksAsyncTask extends AsyncTask<String, Void, Tracks> {
 
@@ -79,4 +103,5 @@ public class TopTracksFragment extends ListFragment {
             }
         }
     }
+
 }
