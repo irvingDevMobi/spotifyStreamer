@@ -46,7 +46,9 @@ public class MainActivityFragment extends Fragment {
 
         final EditText editText = (EditText) rootView.findViewById(R.id.input_main_editText);
         ListView artistsListView = (ListView) rootView.findViewById(R.id.results_listView);
-        arrayAdapter = new ArtistsArrayAdapter(getActivity(), new ArrayList<Artist>());
+        if (arrayAdapter == null) {
+            arrayAdapter = new ArtistsArrayAdapter(getActivity(), new ArrayList<Artist>());
+        }
         artistsListView.setAdapter(arrayAdapter);
         artistsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
