@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.games.iris.spotifystreamer.Adapters.ArtistsArrayAdapter;
+import com.games.iris.spotifystreamer.models.ArtistP;
 
 import java.util.ArrayList;
 
@@ -47,15 +48,15 @@ public class MainActivityFragment extends Fragment {
         final EditText editText = (EditText) rootView.findViewById(R.id.input_main_editText);
         ListView artistsListView = (ListView) rootView.findViewById(R.id.results_listView);
         if (arrayAdapter == null) {
-            arrayAdapter = new ArtistsArrayAdapter(getActivity(), new ArrayList<Artist>());
+            arrayAdapter = new ArtistsArrayAdapter(getActivity(), new ArrayList<ArtistP>());
         }
         artistsListView.setAdapter(arrayAdapter);
         artistsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Artist artist = arrayAdapter.getItem(position);
-                interactionListener.onArtistSelected(artist.id);
+                ArtistP artist = arrayAdapter.getItem(position);
+                interactionListener.onArtistSelected(artist.getId());
             }
         });
 
@@ -70,6 +71,11 @@ public class MainActivityFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -125,7 +131,8 @@ public class MainActivityFragment extends Fragment {
                 arrayAdapter.clear();
                 for (Artist artist : pager.items)
                 {
-                    arrayAdapter.add(artist);
+                    ArtistP artistP = new ArtistP(artist);
+                    arrayAdapter.add(artistP);
                 }
             }
             else

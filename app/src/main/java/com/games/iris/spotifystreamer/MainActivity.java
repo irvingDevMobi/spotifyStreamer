@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity
 
         transaction.replace(R.id.fragment, topsFragment);
         transaction.addToBackStack(null);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.commit();
     }
 }
