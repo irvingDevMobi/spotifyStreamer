@@ -1,5 +1,6 @@
 package com.games.iris.spotifystreamer;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -30,8 +31,11 @@ import kaaes.spotify.webapi.android.models.Tracks;
 public class TopTracksFragment extends ListFragment {
 
     public static String ARG_SPOTIFY_ID = "spotifyId";
+
     private TrackArrayAdapter arrayAdapter;
     private ActionBar actionBar;
+
+    private TopTracksFragmentInteractionListener interactionListener;
 
     public static TopTracksFragment newInstance(String spotifyId) {
         TopTracksFragment fragment = new TopTracksFragment();
@@ -46,6 +50,17 @@ public class TopTracksFragment extends ListFragment {
      * screen orientation changes).
      */
     public TopTracksFragment() {
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            interactionListener = (TopTracksFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                                         + " must implement OnMainFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -85,9 +100,15 @@ public class TopTracksFragment extends ListFragment {
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        interactionListener = null;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            getActivity().onBackPressed();
+            interactionListener.onBackPressedFragment();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -118,4 +139,7 @@ public class TopTracksFragment extends ListFragment {
         }
     }
 
+    public interface TopTracksFragmentInteractionListener {
+        void onBackPressedFragment();
+    }
 }

@@ -8,8 +8,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends AppCompatActivity
-    implements MainActivityFragment.OnMainFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity implements
+    MainActivityFragment.OnMainFragmentInteractionListener,
+    TopTracksFragment.TopTracksFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,5 +69,10 @@ public class MainActivity extends AppCompatActivity
         transaction.addToBackStack(null);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.commit();
+    }
+
+    @Override
+    public void onBackPressedFragment() {
+        getSupportFragmentManager().popBackStack();
     }
 }

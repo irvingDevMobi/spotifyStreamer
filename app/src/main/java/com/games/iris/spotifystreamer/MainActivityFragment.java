@@ -33,49 +33,13 @@ import kaaes.spotify.webapi.android.models.Pager;
  */
 public class MainActivityFragment extends Fragment {
 
+    private static final String BUNDLE_KEY_LIST = "artistPList";
+
     private ArtistsArrayAdapter arrayAdapter;
+    private ArrayList<ArtistP> artistListValues;
     private OnMainFragmentInteractionListener interactionListener;
 
     public MainActivityFragment() {
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-        final EditText editText = (EditText) rootView.findViewById(R.id.input_main_editText);
-        ListView artistsListView = (ListView) rootView.findViewById(R.id.results_listView);
-        if (arrayAdapter == null) {
-            arrayAdapter = new ArtistsArrayAdapter(getActivity(), new ArrayList<ArtistP>());
-        }
-        artistsListView.setAdapter(arrayAdapter);
-        artistsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                ArtistP artist = arrayAdapter.getItem(position);
-                interactionListener.onArtistSelected(artist.getId());
-            }
-        });
-
-        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    launchSearch(editText.getText().toString());
-                }
-                return false;
-            }
-        });
-
-        return rootView;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -90,9 +54,53 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+        final EditText editText = (EditText) rootView.findViewById(R.id.input_main_editText);
+        ListView artistsListView = (ListView) rootView.findViewById(R.id.results_listView);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_KEY_LIST)) {
+            artistListValues = savedInstanceState.getParcelableArrayList(BUNDLE_KEY_LIST);
+        }
+        if (artistListValues == null) {
+            artistListValues = new ArrayList<ArtistP>();
+        }
+        arrayAdapter = new ArtistsArrayAdapter(getActivity(), artistListValues);
+        artistsListView.setAdapter(arrayAdapter);
+        artistsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                ArtistP artist = arrayAdapter.getItem(position);
+                interactionListener.onArtistSelected(artist.getId());
+            }
+        });
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    launchSearch(editText.getText().toString());
+                }
+                return false;
+            }
+        });
+
+        return rootView;
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         interactionListener = null;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(BUNDLE_KEY_LIST, artistListValues);
     }
 
     private void launchSearch(@NonNull String query)
