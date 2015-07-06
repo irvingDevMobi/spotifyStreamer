@@ -12,7 +12,7 @@ import kaaes.spotify.webapi.android.models.Artist;
  * @since 29/06/2015
  */
 public class ArtistP implements Parcelable {
-    public static final String DEFAUL_IMAGE = "default";
+    public static final String DEFAULT_IMAGE = "default";
 
     private String id;
     private String name;
@@ -22,7 +22,7 @@ public class ArtistP implements Parcelable {
         this.id = spotifyArtist.id;
         this.name = spotifyArtist.name;
         if (spotifyArtist.images.isEmpty()) {
-            this.image = DEFAUL_IMAGE;
+            this.image = DEFAULT_IMAGE;
         } else {
             this.image = spotifyArtist.images.get(0).url;
         }
@@ -42,7 +42,7 @@ public class ArtistP implements Parcelable {
 
             @Override
             public ArtistP[] newArray(int size) {
-                return new ArtistP[0];
+                return new ArtistP[size];
             }
         };
 

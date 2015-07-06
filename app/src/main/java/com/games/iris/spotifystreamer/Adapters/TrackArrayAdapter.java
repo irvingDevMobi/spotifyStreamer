@@ -9,21 +9,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.games.iris.spotifystreamer.R;
+import com.games.iris.spotifystreamer.models.TrackP;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
-
-import kaaes.spotify.webapi.android.models.Track;
 
 /**
  * @author Irving
  * @since 22/06/2015
  */
-public class TrackArrayAdapter extends ArrayAdapter<Track> {
+public class TrackArrayAdapter extends ArrayAdapter<TrackP> {
 
     private LayoutInflater inflater;
 
-    public TrackArrayAdapter(Context context, List<Track> values) {
+    public TrackArrayAdapter(Context context, List<TrackP> values) {
         super(context, R.layout.list_item_track, values);
 
         inflater = LayoutInflater.from(getContext());
@@ -44,16 +43,12 @@ public class TrackArrayAdapter extends ArrayAdapter<Track> {
             rowView.setTag(viewHolder);
         }
 
-        Track track = getItem(position);
+        TrackP track = getItem(position);
         TrackViewHolder holder = (TrackViewHolder) rowView.getTag();
-        holder.title.setText(track.name);
-        if (track.album != null) {
-            holder.album.setText(track.album.name);
-            if (!track.album.images.isEmpty()) {
-                String urlImage = track.album.images.get(0).url;
-                Picasso.with(getContext()).load(urlImage).into(holder.icon);
-            }
-        }
+        holder.title.setText(track.getTitle());
+        holder.album.setText(track.getAlbum());
+        String urlImage = track.getUrlImage();
+        Picasso.with(getContext()).load(urlImage).into(holder.icon);
         return rowView;
     }
 

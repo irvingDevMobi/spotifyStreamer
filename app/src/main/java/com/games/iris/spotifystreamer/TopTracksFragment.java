@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.games.iris.spotifystreamer.Adapters.TrackArrayAdapter;
+import com.games.iris.spotifystreamer.models.TrackP;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,10 +31,13 @@ import kaaes.spotify.webapi.android.models.Tracks;
  */
 public class TopTracksFragment extends ListFragment {
 
+    private static final String BUNDLE_KEY_TRACK_LIST = "trackPList";
     public static String ARG_SPOTIFY_ID = "spotifyId";
 
-    private TrackArrayAdapter arrayAdapter;
     private ActionBar actionBar;
+
+    private TrackArrayAdapter arrayAdapter;
+    private ArrayList<TrackP> trackListValues;
 
     private TopTracksFragmentInteractionListener interactionListener;
 
@@ -68,11 +72,6 @@ public class TopTracksFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        arrayAdapter = new TrackArrayAdapter(getActivity(), new ArrayList<Track>());
-        setListAdapter(arrayAdapter);
-        String spotifyId = getArguments().getString(ARG_SPOTIFY_ID);
-        new TopTracksAsyncTask().execute(spotifyId);
-
         /**
          TODO: I have a question
          Why when a rotate the phone, The Fragment.OnCreate() method is called after
@@ -89,6 +88,27 @@ public class TopTracksFragment extends ListFragment {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_KEY_TRACK_LIST)) {
+            trackListValues = savedInstanceState.getParcelableArrayList(BUNDLE_KEY_TRACK_LIST);
+            if (trackListValues != null && !trackListValues.isEmpty()) {
+                arrayAdapter = new TrackArrayAdapter(getActivity(), trackListValues);
+                setListAdapter(arrayAdapter);
+            } else {
+                initAndLaunch();
+            }
+
+        } else {
+            initAndLaunch();
+        }
+
+    }
+
+    private void initAndLaunch() {
+        trackListValues = new ArrayList<>();
+        arrayAdapter = new TrackArrayAdapter(getActivity(), trackListValues);
+        setListAdapter(arrayAdapter);
+        String spotifyId = getArguments().getString(ARG_SPOTIFY_ID);
+        new TopTracksAsyncTask().execute(spotifyId);
     }
 
     @Override
@@ -103,6 +123,12 @@ public class TopTracksFragment extends ListFragment {
     public void onDetach() {
         super.onDetach();
         interactionListener = null;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(BUNDLE_KEY_TRACK_LIST, trackListValues);
     }
 
     @Override
@@ -133,7 +159,7 @@ public class TopTracksFragment extends ListFragment {
             if (!tracks.tracks.isEmpty()) {
                 arrayAdapter.clear();
                 for (Track track : tracks.tracks) {
-                    arrayAdapter.add(track);
+                    arrayAdapter.add(new TrackP(track));
                 }
             }
         }
