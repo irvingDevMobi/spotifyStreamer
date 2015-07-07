@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onArtistSelected(String spotifyId) {
-        TopTracksFragment topsFragment = TopTracksFragment.newInstance(spotifyId);
+    public void onArtistSelected(String spotifyId, String artistName) {
+        TopTracksFragment topsFragment = TopTracksFragment.newInstance(spotifyId, artistName);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         transaction.replace(R.id.fragment, topsFragment);

@@ -75,7 +75,7 @@ public class MainActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 ArtistP artist = arrayAdapter.getItem(position);
-                interactionListener.onArtistSelected(artist.getId());
+                interactionListener.onArtistSelected(artist.getId(), artist.getName());
             }
         });
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -113,7 +113,7 @@ public class MainActivityFragment extends Fragment {
 
     public interface OnMainFragmentInteractionListener
     {
-        void onArtistSelected(String spotifyId);
+        void onArtistSelected(String spotifyId, String artistName);
     }
 
     class SearchArtistsAsyncTask extends AsyncTask<String, Void, Pager<Artist>>

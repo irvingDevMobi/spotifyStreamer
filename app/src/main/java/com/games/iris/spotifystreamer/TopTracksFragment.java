@@ -33,6 +33,7 @@ public class TopTracksFragment extends ListFragment {
 
     private static final String BUNDLE_KEY_TRACK_LIST = "trackPList";
     public static String ARG_SPOTIFY_ID = "spotifyId";
+    public static String ARG_ARTIST_NAME = "artistName";
 
     private ActionBar actionBar;
 
@@ -41,10 +42,11 @@ public class TopTracksFragment extends ListFragment {
 
     private TopTracksFragmentInteractionListener interactionListener;
 
-    public static TopTracksFragment newInstance(String spotifyId) {
+    public static TopTracksFragment newInstance(String spotifyId, String artistName) {
         TopTracksFragment fragment = new TopTracksFragment();
         Bundle args = new Bundle();
         args.putString(ARG_SPOTIFY_ID, spotifyId);
+        args.putString(ARG_ARTIST_NAME, artistName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -87,6 +89,7 @@ public class TopTracksFragment extends ListFragment {
         actionBar = activity.getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setSubtitle(getArguments().getString(ARG_ARTIST_NAME));
         }
         if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_KEY_TRACK_LIST)) {
             trackListValues = savedInstanceState.getParcelableArrayList(BUNDLE_KEY_TRACK_LIST);
