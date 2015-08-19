@@ -1,0 +1,80 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.games.iris.spotifystreamer.PlayerFragment">
+
+    <TextView
+        android:id="@+id/player_artist_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/player_song_tv"
+        android:text="@string/hello_blank_fragment"/>
+
+    <TextView
+        android:id="@+id/player_song_tv"
+        android:layout_above="@+id/player_album_iv"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hello_blank_fragment"/>
+
+    <ImageView
+        android:id="@+id/player_album_iv"
+        android:src="@drawable/default_album"
+        android:layout_centerInParent="true"
+        android:layout_width="@dimen/size_player_album_image"
+        android:layout_height="@dimen/size_player_album_image"/>
+
+    <TextView
+        android:id="@+id/player_album_tv"
+        android:layout_below="@+id/player_album_iv"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hello_blank_fragment"/>
+
+    <SeekBar
+        android:id="@+id/player_seekBar"
+        android:layout_above="@+id/player_buttons_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:id="@+id/player_buttons_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <ImageButton
+            android:id="@+id/player_back_button"
+            android:src="@android:drawable/ic_media_previous"
+            android:contentDescription="@string/player_back_button"
+            android:layout_margin="@dimen/player_buttons_margin"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_width="@dimen/player_buttons_size"
+            android:layout_height="@dimen/player_buttons_size"/>
+
+        <ImageButton
+            android:id="@+id/player_play_button"
+            android:contentDescription="@string/player_play_button"
+            android:src="@android:drawable/ic_media_play"
+            android:layout_margin="@dimen/player_buttons_margin"
+            android:layout_centerInParent="true"
+            android:layout_width="@dimen/player_buttons_size"
+            android:layout_height="@dimen/player_buttons_size"/>
+
+        <ImageButton
+            android:src="@android:drawable/ic_media_next"
+            android:contentDescription="@string/player_next_button"
+            android:layout_margin="@dimen/player_buttons_margin"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="@dimen/player_buttons_size"
+            android:layout_height="@dimen/player_buttons_size"/>
+    </RelativeLayout>
+
+</RelativeLayout>

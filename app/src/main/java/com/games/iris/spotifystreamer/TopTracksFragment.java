@@ -1,6 +1,7 @@
 package com.games.iris.spotifystreamer;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -8,6 +9,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 
 import com.games.iris.spotifystreamer.Adapters.TrackArrayAdapter;
 import com.games.iris.spotifystreamer.models.TrackP;
@@ -114,6 +116,12 @@ public class TopTracksFragment extends ListFragment {
         new TopTracksAsyncTask().execute(spotifyId);
     }
 
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        Intent intent = new Intent(this.getActivity(), PlayerActivity.class);
+        startActivity(intent);
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();
