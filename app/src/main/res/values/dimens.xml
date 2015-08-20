@@ -2,9 +2,11 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
     <dimen name="list_item_icon">45dp</dimen>
     <dimen name="list_item_icon_margin">16dp</dimen>
-    <dimen name="size_player_album_image">250dp</dimen>
+    <dimen name="player_album_image_size">250dp</dimen>
     <dimen name="player_buttons_margin">5dp</dimen>
     <dimen name="player_buttons_size">40dp</dimen>
+    <dimen name="fragment_artists_width">250dp</dimen>
 </resources>

@@ -87,11 +87,13 @@ public class TopTracksFragment extends ListFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        actionBar = activity.getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setSubtitle(getArguments().getString(ARG_ARTIST_NAME));
+        if (getActivity().findViewById(R.id.fragment_top_tracks) == null) {
+            AppCompatActivity activity = (AppCompatActivity) getActivity();
+            actionBar = activity.getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setSubtitle(getArguments().getString(ARG_ARTIST_NAME));
+            }
         }
         if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_KEY_TRACK_LIST)) {
             trackListValues = savedInstanceState.getParcelableArrayList(BUNDLE_KEY_TRACK_LIST);

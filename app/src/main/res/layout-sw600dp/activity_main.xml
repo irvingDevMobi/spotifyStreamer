@@ -20,7 +20,7 @@
         <fragment
             android:id="@+id/fragment"
             android:name="com.games.iris.spotifystreamer.MainActivityFragment"
-            android:layout_width="100dp"
+            android:layout_width="@dimen/fragment_artists_width"
             android:layout_height="match_parent"/>
 
         <FrameLayout

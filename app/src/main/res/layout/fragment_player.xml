@@ -25,8 +25,8 @@
         android:id="@+id/player_album_iv"
         android:src="@drawable/default_album"
         android:layout_centerInParent="true"
-        android:layout_width="@dimen/size_player_album_image"
-        android:layout_height="@dimen/size_player_album_image"/>
+        android:layout_width="@dimen/player_album_image_size"
+        android:layout_height="@dimen/player_album_image_size"/>
 
     <TextView
         android:id="@+id/player_album_tv"

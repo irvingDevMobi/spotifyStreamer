@@ -21,20 +21,16 @@ public class MainActivity extends AppCompatActivity implements
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
-        // Check that the activity is using the layout version with
-        // the fragment_container FrameLayout
-        if (findViewById(R.id.fragment) != null) {
 
-            // However, if we're being restored from a previous state,
-            // then we don't need to do anything and should return or else
-            // we could end up with overlapping fragments.
-            if (savedInstanceState != null) {
-                return;
-            }
-
-            getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment, new MainActivityFragment()).commit();
+        // If we're being restored from a previous state,
+        // then we don't need to do anything and should return or else
+        // we could end up with overlapping fragments.
+        if (savedInstanceState != null) {
+            return;
         }
+
+        getSupportFragmentManager().beginTransaction()
+            .add(R.id.fragment, new MainActivityFragment()).commit();
     }
 
 
@@ -65,10 +61,16 @@ public class MainActivity extends AppCompatActivity implements
         TopTracksFragment topsFragment = TopTracksFragment.newInstance(spotifyId, artistName);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-        transaction.replace(R.id.fragment, topsFragment);
-        transaction.addToBackStack(null);
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        if (findViewById(R.id.fragment_top_tracks) != null) {
+            transaction.add(R.id.fragment_top_tracks, topsFragment);
+        }
+        else {
+            transaction.replace(R.id.fragment, topsFragment);
+            transaction.addToBackStack(null);
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        }
         transaction.commit();
+
     }
 
     @Override
