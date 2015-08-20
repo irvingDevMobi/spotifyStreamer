@@ -9,4 +9,12 @@
         <item name="colorAccent">@color/accent</item>
     </style>
 
+    <style name="PlayerActivity" parent="Theme.AppCompat.DialogWhenLarge">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/primary</item> 
+        <item name="colorPrimaryDark">@color/primary_dark</item> 
+        <item name="colorControlHighlight">@color/accent_translucent</item> 
+        <item name="colorAccent">@color/accent</item>
+    </style>
+
 </resources>

@@ -123,10 +123,12 @@ public class MainActivityFragment extends Fragment {
         protected Pager<Artist> doInBackground(String... params) {
             SpotifyApi spotifyApi = new SpotifyApi();
             SpotifyService spotify = spotifyApi.getService();
-            ArtistsPager artistsPager = spotify.searchArtists(params[0]);
-            if (artistsPager != null && artistsPager.artists != null)
+            if (spotify != null)
             {
-                return artistsPager.artists;
+                ArtistsPager artistsPager = spotify.searchArtists(params[0]);
+                if (artistsPager != null && artistsPager.artists != null) {
+                    return artistsPager.artists;
+                }
             }
             return null;
         }

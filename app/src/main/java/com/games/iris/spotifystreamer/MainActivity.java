@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         if (findViewById(R.id.fragment_top_tracks) != null) {
-            transaction.add(R.id.fragment_top_tracks, topsFragment);
+            transaction.replace(R.id.fragment_top_tracks, topsFragment);
         }
         else {
             transaction.replace(R.id.fragment, topsFragment);

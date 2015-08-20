@@ -2,7 +2,6 @@ package com.games.iris.spotifystreamer;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 public class PlayerActivity extends AppCompatActivity {
@@ -12,14 +11,21 @@ public class PlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
-        }
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        if (toolbar != null)
+//        {
+//            boolean isTablet = getIntent().getBooleanExtra(Constants.EXTRA_IS_TABLET, false);
+//            if (isTablet) {
+//                setSupportActionBar(toolbar);
+//            }
+//            else {
+//                toolbar.setVisibility(View.GONE);
+//            }
+//        }
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
-        if (findViewById(R.id.fragment_container) != null) {
-
+        if (findViewById(R.id.fragment_container) != null)
+        {
             // However, if we're being restored from a previous state,
             // then we don't need to do anything and should return or else
             // we could end up with overlapping fragments.
@@ -27,7 +33,8 @@ public class PlayerActivity extends AppCompatActivity {
                 return;
             }
 
-            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, PlayerFragment.newInstance("", "")).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
+                                                               PlayerFragment.newInstance("", "")).commit();
         }
 
     }

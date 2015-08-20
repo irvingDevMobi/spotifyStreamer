@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.games.iris.spotifystreamer.Adapters.TrackArrayAdapter;
+import com.games.iris.spotifystreamer.Util.Constants;
 import com.games.iris.spotifystreamer.models.TrackP;
 
 import java.util.ArrayList;
@@ -37,12 +38,14 @@ public class TopTracksFragment extends ListFragment {
     public static String ARG_SPOTIFY_ID = "spotifyId";
     public static String ARG_ARTIST_NAME = "artistName";
 
+    private TopTracksFragmentInteractionListener interactionListener;
+
     private ActionBar actionBar;
 
     private TrackArrayAdapter arrayAdapter;
     private ArrayList<TrackP> trackListValues;
 
-    private TopTracksFragmentInteractionListener interactionListener;
+    private boolean isTablet;
 
     public static TopTracksFragment newInstance(String spotifyId, String artistName) {
         TopTracksFragment fragment = new TopTracksFragment();
@@ -74,8 +77,11 @@ public class TopTracksFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-
+        if (getActivity().findViewById(R.id.fragment_top_tracks) == null)
+        {
+            setHasOptionsMenu(true);
+            isTablet = true;
+        }
         /**
          TODO: I have a question
          Why when a rotate the phone, The Fragment.OnCreate() method is called after
@@ -87,7 +93,7 @@ public class TopTracksFragment extends ListFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getActivity().findViewById(R.id.fragment_top_tracks) == null) {
+        if (!isTablet) {
             AppCompatActivity activity = (AppCompatActivity) getActivity();
             actionBar = activity.getSupportActionBar();
             if (actionBar != null) {
@@ -115,13 +121,17 @@ public class TopTracksFragment extends ListFragment {
         arrayAdapter = new TrackArrayAdapter(getActivity(), trackListValues);
         setListAdapter(arrayAdapter);
         String spotifyId = getArguments().getString(ARG_SPOTIFY_ID);
-        new TopTracksAsyncTask().execute(spotifyId);
+        if (spotifyId != null)
+        {
+            new TopTracksAsyncTask().execute(spotifyId);
+        }
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         Intent intent = new Intent(this.getActivity(), PlayerActivity.class);
+        intent.putExtra(Constants.EXTRA_IS_TABLET, isTablet);
         startActivity(intent);
     }
     @Override
@@ -146,8 +156,10 @@ public class TopTracksFragment extends ListFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            interactionListener.onBackPressedFragment();
+        if (!isTablet) {
+            if (item.getItemId() == android.R.id.home) {
+                interactionListener.onBackPressedFragment();
+            }
         }
         return super.onOptionsItemSelected(item);
     }

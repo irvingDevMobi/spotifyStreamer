@@ -44,6 +44,7 @@
 
     <RelativeLayout
         android:id="@+id/player_buttons_container"
+        android:background="@color/accent_translucent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
