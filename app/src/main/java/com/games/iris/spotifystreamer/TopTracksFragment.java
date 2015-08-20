@@ -131,6 +131,7 @@ public class TopTracksFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         Intent intent = new Intent(this.getActivity(), PlayerActivity.class);
+        intent.putExtra(Constants.EXTRA_TRACK_PARCELABLE, trackListValues.get(position));
         intent.putExtra(Constants.EXTRA_IS_TABLET, isTablet);
         startActivity(intent);
     }

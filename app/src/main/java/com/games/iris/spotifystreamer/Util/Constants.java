@@ -7,4 +7,6 @@ package com.games.iris.spotifystreamer.Util;
 public class Constants {
 
     public static final String EXTRA_IS_TABLET ="extIsTablet";
+    public static final String EXTRA_TRACK_PARCELABLE = "extTrack";
+    public static final String SPOTIFY = "spotify";
 }

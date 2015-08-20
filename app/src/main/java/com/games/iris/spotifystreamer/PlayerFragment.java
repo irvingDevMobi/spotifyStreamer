@@ -1,11 +1,21 @@
 package com.games.iris.spotifystreamer;
 
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.games.iris.spotifystreamer.Util.Constants;
+import com.games.iris.spotifystreamer.models.TrackP;
+import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
 
 
 /**
@@ -15,32 +25,21 @@ import android.view.ViewGroup;
  */
 public class PlayerFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private TrackP track;
 
     private OnFragmentInteractionListener mListener;
 
     /**
      * Use this factory method to create a new instance of this fragment using the provided parameters.
      *
-     * @param param1
-     *     Parameter 1.
-     * @param param2
-     *     Parameter 2.
+     * @param track
+     *     Object when track information
      * @return A new instance of fragment PlayerFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static PlayerFragment newInstance(String param1, String param2) {
+    public static PlayerFragment newInstance(TrackP track) {
         PlayerFragment fragment = new PlayerFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putParcelable(Constants.EXTRA_TRACK_PARCELABLE, track);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,17 +51,45 @@ public class PlayerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            track = getArguments().getParcelable(Constants.EXTRA_TRACK_PARCELABLE);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_player, container, false);
+        View root = inflater.inflate(R.layout.fragment_player, container, false);
+        TextView artistTV = (TextView) root.findViewById(R.id.player_artist_tv);
+        TextView albumTV = (TextView) root.findViewById(R.id.player_album_tv);
+        ImageView albumIV = (ImageView) root.findViewById(R.id.player_album_iv);
+        TextView songTV = (TextView) root.findViewById(R.id.player_song_tv);
+
+        if (track != null)
+        {
+            artistTV.setText(track.getArtist());
+            albumTV.setText(track.getAlbum());
+            Picasso.with(getActivity()).load(track.getUrlImage()).into(albumIV);
+            songTV.setText(track.getTitle());
+        }
+        return root;
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        String url = track.getPreviewUrl();
+
+        try {
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepare(); // might take long! (for buffering, etc)
+            mediaPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

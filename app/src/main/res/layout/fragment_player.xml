@@ -10,11 +10,11 @@
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/player_song_tv"
+        android:layout_above="@+id/player_album_tv"
         android:text="@string/hello_blank_fragment"/>
 
     <TextView
-        android:id="@+id/player_song_tv"
+        android:id="@+id/player_album_tv"
         android:layout_above="@+id/player_album_iv"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
@@ -29,7 +29,7 @@
         android:layout_height="@dimen/player_album_image_size"/>
 
     <TextView
-        android:id="@+id/player_album_tv"
+        android:id="@+id/player_song_tv"
         android:layout_below="@+id/player_album_iv"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"

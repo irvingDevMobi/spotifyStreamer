@@ -8,5 +8,5 @@
     <dimen name="player_album_image_size">250dp</dimen>
     <dimen name="player_buttons_margin">5dp</dimen>
     <dimen name="player_buttons_size">40dp</dimen>
-    <dimen name="fragment_artists_width">250dp</dimen>
+    <dimen name="fragment_artists_width">280dp</dimen>
 </resources>
