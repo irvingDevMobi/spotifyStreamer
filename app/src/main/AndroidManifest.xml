@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.games.iris.spotifystreamer.player.PlayerService"/>
 
     <application
         android:allowBackup="true"
@@ -27,7 +28,11 @@
         <service
             android:name=".player.PlayerService"
             android:enabled="true"
+            android:process=":remote"
             android:exported="true" >
+            <intent-filter>
+                <action android:name="com.games.iris.spotifystreamer.player.PlayerService" />
+            </intent-filter>
         </service>
     </application>
 
