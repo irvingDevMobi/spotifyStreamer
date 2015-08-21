@@ -7,6 +7,8 @@ import android.view.MenuItem;
 import com.games.iris.spotifystreamer.Util.Constants;
 import com.games.iris.spotifystreamer.models.TrackP;
 
+import java.util.ArrayList;
+
 public class PlayerActivity extends AppCompatActivity {
 
     @Override
@@ -36,9 +38,10 @@ public class PlayerActivity extends AppCompatActivity {
                 return;
             }
 
-            TrackP trackP = getIntent().getParcelableExtra(Constants.EXTRA_TRACK_PARCELABLE);
+            int index = getIntent().getIntExtra(Constants.EXTRA_TRACK_INDEX, 0);
+            ArrayList<TrackP> tracksList = getIntent().getParcelableArrayListExtra(Constants.EXTRA_TRACKS_LIST_PARCELABLE);
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
-                                                               PlayerFragment.newInstance(trackP)).commit();
+                                                               PlayerFragment.newInstance(index, tracksList)).commit();
         }
 
     }
