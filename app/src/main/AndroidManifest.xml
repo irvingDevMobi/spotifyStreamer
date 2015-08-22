@@ -25,9 +25,7 @@
             android:theme="@style/PlayerActivity" />
 
         <service
-            android:name=".player.PlayerService"
-            android:enabled="true"
-            android:exported="true" >
+            android:name=".player.PlayerService">
         </service>
     </application>
 

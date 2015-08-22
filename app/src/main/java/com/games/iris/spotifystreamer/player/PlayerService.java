@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.ResultReceiver;
 
+import com.games.iris.spotifystreamer.PlayerFragment;
 import com.games.iris.spotifystreamer.Util.Constants;
 import com.games.iris.spotifystreamer.models.TrackP;
 
@@ -14,6 +17,7 @@ import java.io.IOException;
 
 public class PlayerService extends Service implements MediaPlayer.OnPreparedListener{
 
+    private ResultReceiver resultReceiver;
     private MediaPlayer mediaPlayer;
 
     /**
@@ -47,7 +51,10 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
+        if (intent.hasExtra(Constants.EXTRA_RESULT_RECEIVER))
+        {
+            resultReceiver = intent.getParcelableExtra(Constants.EXTRA_RESULT_RECEIVER);
+        }
         return processIntent(intent);
     }
 
@@ -130,5 +137,11 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     public void onPrepared(MediaPlayer mp)
     {
         mp.start();
+        if (resultReceiver != null)
+        {
+            Bundle bundle = new Bundle();
+            bundle.putInt(Constants.EXTRA_TRACK_LONG, mp.getDuration());
+            resultReceiver.send(PlayerFragment.IS_PLAYING_RESULT_CODE, bundle);
+        }
     }
 }

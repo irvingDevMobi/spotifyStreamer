@@ -6,12 +6,17 @@ package com.games.iris.spotifystreamer.Util;
  */
 public class Constants {
 
+    public static final String TAG_LOG = "tagLogGeneral";
+    public static final String SPOTIFY = "spotify";
+
     public static final String EXTRA_IS_TABLET ="extIsTablet";
+    public static final String EXTRA_RESULT_RECEIVER ="extResultReceiver";
+
     public static final String EXTRA_TRACK_INDEX = "extIndex";
     public static final String EXTRA_TRACKS_LIST_PARCELABLE = "extTracks";
-    public static final String SPOTIFY = "spotify";
     public static final String EXTRA_TRACK_PARCELABLE = "ext1track";
     public static final String EXTRA_SEEK_TO = "extSeekTo";
+    public static final String EXTRA_TRACK_LONG = "extTrackLong";
 
 
     public static final String ACTION_PLAY = "player.PLAY";

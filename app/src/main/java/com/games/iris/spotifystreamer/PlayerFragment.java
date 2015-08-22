@@ -5,12 +5,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.games.iris.spotifystreamer.Util.Constants;
@@ -29,12 +34,18 @@ import java.util.List;
  */
 public class PlayerFragment extends Fragment{
 
+    public static final int IS_PLAYING_RESULT_CODE = 1;
+
     private OnFragmentInteractionListener mListener;
 
     private TextView artistTV;
     private TextView albumTV;
     private ImageView albumIV;
     private TextView songTV;
+    private SeekBar seekBar;
+    private ImageButton playButton;
+
+    private PlayerResultReceiver resultReceiver;
 
     private WifiManager.WifiLock wifiLock;
     private List<TrackP> tracksList;
@@ -68,6 +79,8 @@ public class PlayerFragment extends Fragment{
             currentIndex = getArguments().getInt(Constants.EXTRA_TRACK_INDEX, 0);
         }
         intentService = new Intent(getActivity(), PlayerService.class);
+        resultReceiver = new PlayerResultReceiver(null);
+        intentService.putExtra(Constants.EXTRA_RESULT_RECEIVER, resultReceiver);
         wifiLock = ((WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE))
             .createWifiLock(WifiManager.WIFI_MODE_FULL, "mylock");
         wifiLock.acquire();
@@ -81,7 +94,8 @@ public class PlayerFragment extends Fragment{
         albumTV = (TextView) root.findViewById(R.id.player_album_tv);
         albumIV = (ImageView) root.findViewById(R.id.player_album_iv);
         songTV = (TextView) root.findViewById(R.id.player_song_tv);
-
+        seekBar = (SeekBar) root.findViewById(R.id.player_seekBar);
+        playButton = (ImageButton) root.findViewById(R.id.player_play_button);
         playTrack(currentIndex);
         return root;
     }
@@ -106,6 +120,7 @@ public class PlayerFragment extends Fragment{
     {
         TrackP track = tracksList.get(index);
         if (track != null) {
+            disableControl();
             setTrackValues(track);
             intentService.putExtra(Constants.EXTRA_TRACK_PARCELABLE, track);
             intentService.setAction(Constants.ACTION_PLAY);
@@ -121,6 +136,20 @@ public class PlayerFragment extends Fragment{
         albumTV.setText(track.getAlbum());
         Picasso.with(getActivity()).load(track.getUrlImage()).into(albumIV);
         songTV.setText(track.getTitle());
+    }
+
+    private void enableControl()
+    {
+        seekBar.setEnabled(true);
+        playButton.setEnabled(true);
+        playButton.setImageResource(android.R.drawable.ic_media_pause);
+    }
+
+    private void disableControl()
+    {
+
+        seekBar.setEnabled(false);
+        playButton.setEnabled(false);
     }
 
     //    @Override
@@ -153,6 +182,34 @@ public class PlayerFragment extends Fragment{
 
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    class PlayerResultReceiver extends ResultReceiver
+    {
+
+        /**
+         * Create a new ResultReceive to receive results.  Your {@link #onReceiveResult} method will be called from the thread running
+         * <var>handler</var> if given, or from an arbitrary thread if null.
+         *
+         * @param handler
+         */
+        public PlayerResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+            {
+                if (resultCode == IS_PLAYING_RESULT_CODE)
+                {
+                    int duration = resultData.getInt(Constants.EXTRA_TRACK_LONG);
+                    enableControl();
+                    seekBar.setMax(duration);
+                    Log.v(Constants.TAG_LOG, "" + duration);
+                }
+            }
+        }
     }
 
 }
