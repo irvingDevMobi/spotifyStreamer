@@ -37,9 +37,7 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
     @Override
     public void onCreate() {
         super.onCreate();
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mediaPlayer.setOnPreparedListener(this);
+        initPlayer();
     }
 
     @Override
@@ -49,27 +47,83 @@ public class PlayerService extends Service implements MediaPlayer.OnPreparedList
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getAction().equals(Constants.ACTION_PLAY))
+
+        return processIntent(intent);
+    }
+
+    private void initPlayer()
+        {
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setOnPreparedListener(this);
+    }
+
+    private int processIntent(Intent intent)
+    {
+        if (Constants.ACTION_PLAY.equals(intent.getAction()))
         {
             TrackP trackP = intent.getParcelableExtra(Constants.EXTRA_TRACK_PARCELABLE);
             if (trackP != null)
             {
-                play(trackP);
+                playMP(trackP);
             }
         }
+        else if (Constants.ACTION_PAUSE.equals(intent.getAction()))
+        {
+            pauseMP();
+        }
+        else if (Constants.ACTION_SEEK_TO.equals(intent.getAction()))
+        {
+            int seekValue = intent.getIntExtra(Constants.EXTRA_SEEK_TO, 0);
+            seekToMP(seekValue);
+        }
+        else {
+            // CASE ACTION_STOP and another
+            stopMP();
+            stopSelf();
+            return START_NOT_STICKY;
+        }
         return START_STICKY;
+
     }
 
-    private void play(TrackP trackP) {
+    private void playMP(TrackP trackP)
+    {
         try {
-            if (mediaPlayer.isPlaying()) {
+            if (mediaPlayer.isPlaying())
+            {
                 mediaPlayer.stop();
+                mediaPlayer.reset();
             }
             mediaPlayer.setDataSource(trackP.getPreviewUrl());
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void pauseMP()
+    {
+        if (mediaPlayer.isPlaying())
+        {
+            mediaPlayer.pause();
+        } else {
+            mediaPlayer.start();
+        }
+    }
+
+    public void stopMP()
+    {
+        if (mediaPlayer != null)
+        {
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+        }
+    }
+
+    public void seekToMP(int value)
+    {
+        mediaPlayer.seekTo(value);
     }
 
     @Override
