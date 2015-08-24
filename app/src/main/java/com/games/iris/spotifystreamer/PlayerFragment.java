@@ -2,7 +2,6 @@ package com.games.iris.spotifystreamer;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +20,7 @@ import android.widget.TextView;
 import com.games.iris.spotifystreamer.Util.Constants;
 import com.games.iris.spotifystreamer.models.TrackP;
 import com.games.iris.spotifystreamer.player.PlayerService;
+import com.games.iris.spotifystreamer.player.PlayerStates;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -28,9 +28,7 @@ import java.util.List;
 
 
 /**
- * A simple {@link Fragment} subclass. Activities that contain this fragment must implement the {@link
- * PlayerFragment.OnFragmentInteractionListener} interface to handle interaction events. Use the {@link PlayerFragment#newInstance} factory
- * method to create an instance of this fragment.
+ * A simple {@link Fragment} subclass.
  */
 public class PlayerFragment extends Fragment implements View.OnClickListener{
 
@@ -38,9 +36,6 @@ public class PlayerFragment extends Fragment implements View.OnClickListener{
     public static final int IS_PLAYING_RESULT_CODE = 2;
     public static final int SEEK_TO_RESULT_CODE = 3;
     public static final int ON_COMPLETE_TRACK_RESULT_CODE = 4;
-
-
-    private OnFragmentInteractionListener mListener;
 
     private TextView artistTV;
     private TextView albumTV;
@@ -60,6 +55,9 @@ public class PlayerFragment extends Fragment implements View.OnClickListener{
     private Intent intentService;
 
     private int currentIndex;
+    private int currentDuration;
+    private int playerState;
+
     /**
      * Use this factory method to create a new instance of this fragment using the provided parameters.
      *
@@ -86,8 +84,13 @@ public class PlayerFragment extends Fragment implements View.OnClickListener{
             tracksList = getArguments().getParcelableArrayList(Constants.EXTRA_TRACKS_LIST_PARCELABLE);
             currentIndex = getArguments().getInt(Constants.EXTRA_TRACK_INDEX, 0);
         }
+        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.EXTRA_TRACK_INDEX))
+        {
+            currentIndex = savedInstanceState.getInt(Constants.EXTRA_TRACK_INDEX);
+        }
         intentService = new Intent(getActivity(), PlayerService.class);
         resultReceiver = new PlayerResultReceiver(null);
+        playerState = PlayerStates.STOP;
         intentService.putExtra(Constants.EXTRA_RESULT_RECEIVER, resultReceiver);
         wifiLock = ((WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE))
             .createWifiLock(WifiManager.WIFI_MODE_FULL, "mylock");
@@ -109,13 +112,12 @@ public class PlayerFragment extends Fragment implements View.OnClickListener{
         backButton = (ImageButton) root.findViewById(R.id.player_back_button);
         nextButton = (ImageButton) root.findViewById(R.id.player_next_button);
 
-        playTrack(currentIndex);
-
         playButton.setOnClickListener(this);
         backButton.setOnClickListener(this);
         nextButton.setOnClickListener(this);
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
@@ -134,23 +136,67 @@ public class PlayerFragment extends Fragment implements View.OnClickListener{
             }
         });
 
+        String titleSaved =  tracksList.get(currentIndex).getTitle();
+        if (savedInstanceState != null
+            && savedInstanceState.containsKey(Constants.EXTRA_INSTANCE_PLAYER_STATE))
+        {
+            playerState = savedInstanceState.getInt(Constants.EXTRA_INSTANCE_PLAYER_STATE);
+            titleSaved = savedInstanceState.getString(Constants.EXTRA_INSTANCE_TRACK_NAME);
+            currentDuration = savedInstanceState.getInt(Constants.EXTRA_INSTANCE_TRACK_DURATION);
+        }
+        if ((playerState == PlayerStates.PAUSE || playerState == PlayerStates.PLAYING)
+            && titleSaved != null && titleSaved.equals(tracksList.get(currentIndex).getTitle()))
+        {
+            setTrackValues(tracksList.get(currentIndex));
+            initSeekBarValues(currentDuration);
+            if (playerState == PlayerStates.PLAYING)
+            {
+                intentService.setAction(Constants.ACTION_UPDATE_SEEK_TO);
+                getActivity().startService(intentService);
+                playButton.setImageResource(android.R.drawable.ic_media_pause);
+            }
+        } else
+        {
+            playTrack(currentIndex);
+        }
         return root;
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putInt(Constants.EXTRA_INSTANCE_PLAYER_STATE, playerState);
+        outState.putInt(Constants.EXTRA_TRACK_INDEX, currentIndex);
+        outState.putString(Constants.EXTRA_INSTANCE_TRACK_NAME, tracksList.get(currentIndex).getTitle());
+        outState.putInt(Constants.EXTRA_INSTANCE_TRACK_DURATION, currentDuration);
+    }
 
-//        String url = track.getPreviewUrl();
-//        try {
-//            MediaPlayer mediaPlayer = new MediaPlayer();
-//            mediaPlayer.setDataSource(url);
-//            mediaPlayer.prepare(); // might take long! (for buffering, etc)
-//            mediaPlayer.start();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        wifiLock.release();
+        if (playerState == PlayerStates.STOP)
+        {
+            getActivity().stopService(intentService);
+        }
+    }
 
+    @Override
+    public void onClick(View v)
+    {
+        int idView = v.getId();
+        switch (idView)
+        {
+        case R.id.player_play_button:
+            onClickPlayButton();
+            break;
+        case R.id.player_back_button:
+            onClickBackButton();
+            break;
+        case R.id.player_next_button:
+            onClickNextButton();
+        }
     }
 
     private void playTrack(int index)
@@ -158,6 +204,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener{
         TrackP track = tracksList.get(index);
         if (track != null) {
             disableControl();
+            currentDuration = 0;
             setTrackValues(track);
             intentService.putExtra(Constants.EXTRA_TRACK_PARCELABLE, track);
             intentService.setAction(Constants.ACTION_PLAY);
@@ -191,41 +238,6 @@ public class PlayerFragment extends Fragment implements View.OnClickListener{
         seekBar.setMax(duration);
         putTimeText(leftTV, 0);
         putTimeText(rightTV, duration);
-    }
-
-    //    @Override
-    //    public void onAttach(Activity activity) {
-    //        super.onAttach(activity);
-    //        try {
-    //            mListener = (OnFragmentInteractionListener) activity;
-    //        } catch (ClassCastException e) {
-    //            throw new ClassCastException(activity.toString() + " must implement OnFragmentInteractionListener");
-    //        }
-    //    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-        wifiLock.release();
-//        getActivity().stopService(intentService);
-    }
-
-    @Override
-    public void onClick(View v)
-    {
-        int idView = v.getId();
-        switch (idView)
-        {
-            case R.id.player_play_button:
-                onClickPlayButton();
-                break;
-            case R.id.player_back_button:
-                onClickBackButton();
-                break;
-            case R.id.player_next_button:
-                onClickNextButton();
-        }
     }
 
     private void onClickNextButton() {
@@ -273,18 +285,6 @@ public class PlayerFragment extends Fragment implements View.OnClickListener{
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this fragment to allow an interaction in this fragment to be
-     * communicated to the activity and potentially other fragments contained in that activity.
-     * <p/>
-     * See the Android Training lesson <a href= "http://developer.android.com/training/basics/fragments/communicating.html" >Communicating
-     * with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
 
     class PlayerResultReceiver extends ResultReceiver
     {
@@ -302,51 +302,54 @@ public class PlayerFragment extends Fragment implements View.OnClickListener{
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
+            if (resultCode == IS_READY_RESULT_CODE)
             {
-                if (resultCode == IS_READY_RESULT_CODE)
+                int duration = resultData.getInt(Constants.EXTRA_TRACK_LONG);
+                enableControl();
+                currentDuration = duration;
+                initSeekBarValues(duration);
+                playerState = PlayerStates.PLAYING;
+                Log.v(Constants.TAG_LOG, "" + duration);
+            }
+            else if (resultCode == IS_PLAYING_RESULT_CODE)
+            {
+                boolean isPlaying = resultData.getBoolean(Constants.EXTRA_TRACK_IS_PLAYING);
+                if (isPlaying)
                 {
-                    int duration = resultData.getInt(Constants.EXTRA_TRACK_LONG);
-                    enableControl();
-                    initSeekBarValues(duration);
-                    Log.v(Constants.TAG_LOG, "" + duration);
+                    playButton.setImageResource(android.R.drawable.ic_media_pause);
+                    playerState = PlayerStates.PLAYING;
+                } else {
+                    playButton.setImageResource(android.R.drawable.ic_media_play);
+                    playerState = PlayerStates.PAUSE;
                 }
-                else if (resultCode == IS_PLAYING_RESULT_CODE)
+            }
+            else if (resultCode == SEEK_TO_RESULT_CODE)
+            {
+                final int seekValue = resultData.getInt(Constants.EXTRA_SEEK_TO);
+                if (isVisible())
                 {
-                    boolean isPlaying = resultData.getBoolean(Constants.EXTRA_TRACK_IS_PLAYING);
-                    if (isPlaying)
-                    {
-                        playButton.setImageResource(android.R.drawable.ic_media_pause);
-                    } else {
-                        playButton.setImageResource(android.R.drawable.ic_media_play);
-                    }
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            seekBar.setProgress(seekValue);
+                            putTimeText(leftTV, seekValue);
+                        }
+                    });
                 }
-                else if (resultCode == SEEK_TO_RESULT_CODE)
+            }
+            else if (resultCode == ON_COMPLETE_TRACK_RESULT_CODE)
+            {
+                if (isVisible())
                 {
-                    final int seekValue = resultData.getInt(Constants.EXTRA_SEEK_TO);
-                    if (isVisible())
-                    {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                seekBar.setProgress(seekValue);
-                                putTimeText(leftTV, seekValue);
-                            }
-                        });
-                    }
-                }
-                else if (resultCode == ON_COMPLETE_TRACK_RESULT_CODE)
-                {
-                    if (isVisible())
-                    {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                onClickNextButton();
-                            }
-                        });
-                    } else {
-                        // TODO:
-                    }
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            onClickNextButton();
+                        }
+                    });
+                } else {
+                    // TODO:
+                    playerState = PlayerStates.STOP;
                 }
             }
         }

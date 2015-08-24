@@ -97,6 +97,10 @@ public class PlayerService extends Service
             bundle.putInt(Constants.EXTRA_SEEK_TO, mediaPlayer.getCurrentPosition());
             resultReceiver.send(PlayerFragment.SEEK_TO_RESULT_CODE, bundle);
         }
+        else if(Constants.ACTION_UPDATE_SEEK_TO.equals(intent.getAction()))
+        {
+            new SeekBarUpdateAsyncTask().execute();
+        }
         else {
             // CASE ACTION_STOP and another
             stopMP();
