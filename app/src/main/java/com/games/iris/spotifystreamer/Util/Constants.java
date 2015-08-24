@@ -17,15 +17,15 @@ public class Constants {
     public static final String EXTRA_TRACK_PARCELABLE = "ext1track";
     public static final String EXTRA_SEEK_TO = "extSeekTo";
     public static final String EXTRA_TRACK_LONG = "extTrackLong";
-
+    public static final String EXTRA_TRACK_IS_PLAYING = "extTrackIsPlay";
 
     public static final String ACTION_PLAY = "player.PLAY";
-    public static final String ACTION_IS_PLAYING = "player.PLAYING";
     public static final String ACTION_PAUSE = "player.PAUSE";
     public static final String ACTION_STOP = "player.STOP";
     public static final String ACTION_BACK = "player.BACK";
     public static final String ACTION_NEXT = "player.NEXT";
     public static final String ACTION_SEEK_TO = "player.SEEK_TO";
+    public static final String ACTION_READ_SEEK_TO = "player.READ.SEEK_TO";
 
     public static final String ACTION_START_SERVICE ="player.START_SERVICE";
     public static final String ACTION_TO_SERVICE ="player.TO_SERVICE";
